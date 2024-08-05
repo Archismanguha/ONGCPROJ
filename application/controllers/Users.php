@@ -30,8 +30,7 @@ class Users extends CI_Controller
 			$data['empid'] = $this->session->userdata('empid');
 			$data['firstname'] = $this->session->userdata('firstname');
 			$data['lastname'] = $this->session->userdata('lastname');
-			$data['blockdtls'] = $this->user->getBlockDtls();
-			$this->load->view('users/thank-you', $data);
+			$this->load->view('users/dashboard', $data);
 		}
 	}
 	// Login method
@@ -43,6 +42,12 @@ class Users extends CI_Controller
 			$data['title'] = 'Login - Tech Arise';
 			$data['metaDescription'] = 'Login';
 			$data['metaKeywords'] = 'Login';
+			if($this->input->get('msg') == "1"){
+				$data['loginErrMsg'] = 'Incorrect Name or Employee Id';
+			}
+			else{
+				$data['loginErrMsg'] = '';
+			}
 			$this->load->view('users/index', $data);
 		}
 	}
@@ -73,46 +78,81 @@ class Users extends CI_Controller
 					);
 					$this->session->set_userdata($sessArray);
 				}
-				redirect('users');
+				//redirect('users');
+				$data['empid'] = $this->session->userdata('empid');
+				$data['firstname'] = $this->session->userdata('firstname');
+				$data['lastname'] = $this->session->userdata('lastname');
+				$this->load->view('users/dashboard', $data);
 			} else {
 				redirect('users/login?msg=1');
 			}
 	}
+
+	public function upload()
+	{
+		if ($this->session->userdata('is_authenticated') == FALSE) {
+			redirect('users/login'); // the user is not logged in, redirect them!
+		} else {
+			$data['title'] = 'Dashboard - Tech Arise';
+			$data['metaDescription'] = 'Dashboard';
+			$data['metaKeywords'] = 'Dashboard';
+			$data['empid'] = $this->session->userdata('empid');
+			$data['firstname'] = $this->session->userdata('firstname');
+			$data['lastname'] = $this->session->userdata('lastname');
+			$data['blockdtls'] = $this->user->getBlockDtls();
+			$data['uploadmsg'] = "";
+			$this->load->view('users/uploadview', $data);
+		}
+	}
 	
 	function uploadDtls()
 	{
-		$blockid = $this->input->post('blocklst');
-		$remarks = $this->input->post('remarks');
-		$uploadFile = $_FILES['uploadFile']['name'];
-		$empid = $this->session->userdata('empid');
+		$data['uploadmsg'] = "";
+		$uploadresult = $this->uploadInPhysicalFolder();
+		if($uploadresult != "ERR"){
+			$blockid = $this->input->post('blocklst');
+			$remarks = $this->input->post('remarks');
+			$uploadFile = $uploadresult;
+			$empid = $this->session->userdata('empid');
 
-		$this->user->setUploadDtls($blockid, $empid, $remarks, $uploadFile);
-		$result = $this->user->saveUploadDtls();
-
-		$this->uploadInPhysicalFolder();
-
+			$this->user->setUploadDtls($blockid, $empid, $remarks, $uploadFile);
+			$result = $this->user->saveUploadDtls();
+			$data['uploadmsg'] = "Details uploaded successfully";
+		}
+		else{
+			$data['uploadmsg'] = "Error Occured";
+		}
 
 		$data['empid'] = $this->session->userdata('empid');
 		$data['firstname'] = $this->session->userdata('firstname');
 		$data['lastname'] = $this->session->userdata('lastname');
 		$data['blockdtls'] = $this->user->getBlockDtls();
-		$this->load->view('users/thank-you', $data);
+		$this->load->view('users/uploadview', $data);
 	}
 	public function uploadInPhysicalFolder(){
 		$config['upload_path'] = $this->config->item('upload_path');
 		$config['allowed_types'] = 'gif|jpg|png|jpeg|zip|pdf|doc|docx';
+		$config['remove_spaces'] = TRUE;
 		$this->load->library('upload', $config);
 		$this->upload->initialize($config); 
 		if (!$this->upload->do_upload('uploadFile')) 
 		{
 			//log_message('debug',$this->upload->display_errors());
 				//error message
+				return "ERR";
 		}
 		else
 		{
-			log_message('debug','1111');
+			//log_message('debug','1111');
 			//$this->upload->do_upload('uploadFile');
 			//upload process
+			$data = array('upload_data' => $this->upload->data());
+			if(!empty($data['upload_data']['file_name'])){
+				return $data['upload_data']['file_name'];
+			}
+			else{
+				return "ERR";
+			}
 		}
 	}
 	// Logout
@@ -126,5 +166,14 @@ class Users extends CI_Controller
 		$this->output->set_header("Cache-Control: no-store, no-cache, must-revalidate, no-transform, max-age=0, post-check=0, pre-check=0");
 		$this->output->set_header("Pragma: no-cache");
 		redirect('/');
+	}
+	public function viewDetails()
+	{
+		if ($this->session->userdata('is_authenticated') == FALSE) {
+			redirect('users/index'); // the user is not logged in, redirect them!
+		} else {
+			$data['alldtls'] = $this->user->getAllDetails();
+			$this->load->view('users/viewDetails', $data);
+		}
 	}
 }

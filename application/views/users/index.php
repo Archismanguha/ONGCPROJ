@@ -9,10 +9,29 @@
             </div>
             <div class="form-group">
                 <label for="empid">Employee Id</label>
-                <input type="text" class="form-control" id="empid" name="empid" placeholder="Employee Id" required />
+                <input type="text" class="form-control" id="empid" name="empid" placeholder="Employee Id*" required />
             </div>
             <button type="submit" class="btn btn-primary" style="float:right">Login</button>
+            <div>
+                <span id="errSpan" style="display:none; color:red;"></span>
+            </div>
         </form>
     </div>
 </main>
+<script>
+    debugger;
+var loginErrMsg = <?php echo json_encode($loginErrMsg); ?>;
+
+var span = document.getElementById("errSpan");
+
+if(loginErrMsg != ""){
+    document.getElementById("errSpan").innerHTML = loginErrMsg;
+    span.style.display = "block";
+}
+else{
+    document.getElementById("errSpan").innerHTML = "";
+    span.style.display = "none";
+}
+
+</script>
 <?php $this->load->view('templates/footer'); ?>

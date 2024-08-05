@@ -60,4 +60,10 @@ class Users_model extends CI_Model
 		$sql = "INSERT INTO tbl_upload_dtls (block_id, emp_id, remarks, filename) VALUES(".$this->_blockid.", ".$this->_empid.", '".$this->_remarks."', '".$this->_uploadFile."')";
 		$query = $this->db->query($sql);
 	}
+	function getAllDetails()
+	{
+		$sql = "select te.FirstName, te.LastName, tb.block_name, tud.remarks, tud.filename from tbl_upload_dtls tud inner join tbl_employee te ON tud.emp_id = te.emp_id inner join tbl_block tb ON tud.block_id = tb.block_id order by tud.id";
+		$query = $this->db->query($sql);
+		return $query->result();
+	}
 }

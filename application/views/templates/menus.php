@@ -5,19 +5,36 @@
     
     <div class="collapse navbar-collapse" id="navbarCollapse">
       <ul class="navbar-nav mr-auto">
-        <li class="nav-item active">
-          
-        </li>
+        <?php if ($this->session->userdata('is_authenticated') == TRUE) {
+          echo "<li class='nav-item active'>";
+            echo "<a class='nav-link' href='".base_url()."users/viewDetails'>View Details <span class='sr-only'>(current)</span></a>";
+          echo "</li>";
+          echo "<li class='nav-item active'>";
+            echo "<a class='nav-link' href='".base_url()."users/upload'>Upload <span class='sr-only'>(current)</span></a>";
+          echo "</li>";
+          echo "<li class='nav-item active' style='float:right;'>";
+            echo "<a class='nav-link' href='".base_url()."users/logout'>Log Out <span class='sr-only'>(current)</span></a>";
+          echo "</li>";
+        }
+        ?>
       </ul>
       <span class="nav-item dropdown">
         <?php if (!empty($userInfo)) {
-          print '<a style="color:#fff;" class="nav-link" href="' . base_url() . 'users/logout" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <i class="fa fa-sign-out" aria-hidden="true"></i> Logout
-        </a>';
+
         } else {
           
         } ?>
       </span>
     </div>
+    <div class="navbar-collapse collapse order-3 dual-collapse2">
+      <ul class="navbar-nav ml-auto">
+        <?php if ($this->session->userdata('is_authenticated') == TRUE) {
+          echo "<li class='nav-item active' style='float:right;color:white;'>";
+            echo $this->session->userdata('firstname')." ".$this->session->userdata('lastname');
+          echo "</li>";
+        }
+        ?>
+      </ul>
+  </div>
   </nav>
 </header>

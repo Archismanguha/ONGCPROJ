@@ -1,5 +1,6 @@
 <footer class="footer">
-  <div class="container">&nbsp;</div>
+  <div class="container">&#169;This Is Reserved By ARCHISMAN GUHA</div>
+  <div class="container">Mail @ archismanguha2000@gmail.com</div>
 </footer>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
